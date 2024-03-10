@@ -11,18 +11,19 @@ __version__ = "0.0.1"
 
 from fastapi import FastAPI
 
+from lib.db_session_maker import SessionMaker
+from lib.models.patient import Patient
+
 app = FastAPI()
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/users")
-async def get_users():
-    return [
-        {
-            "firstName": "Fritz",
-            "lastName": "Batroni",
-            "email": "fritz.g.batroni@gmail.com"
-        }
-    ]
+@app.get("/patients")
+async def get_patients():
+   db_session = SessionMaker().get_session_maker()
+   with db_session.begin() as session:
+        patients= session.query(Patient)
+
+        return patients
